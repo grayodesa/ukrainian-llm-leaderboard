@@ -25,7 +25,7 @@ MAIN_BENCHMARKS = {
         "name": "Long FLORES Ukrainian",
         "scale": [0, 40],
     },
-    "squad_uk": {"metric": "f1", "name": "SQuAD Ukrainian", "scale": [0, 1]},
+    "squad_uk": {"metric": "f1", "name": "SQuAD Ukrainian", "scale": [0, 100]},
     "xlsum_uk": {"metric": "bleu", "name": "XLSum Ukrainian", "scale": [0, 30]},
     "triviaqa_uk": {
         "metric": "exact_match",
