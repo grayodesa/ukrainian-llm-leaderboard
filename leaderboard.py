@@ -800,29 +800,16 @@ def create_leaderboard_app() -> gr.Blocks:
             fn=update_visualization, inputs=[metric_selector], outputs=[metric_plot]
         )
 
+        with open("README.md", "r", encoding="utf-8") as f:
+            readme_content = f.read()
+            readme_content = readme_content[readme_content.find("---", 5):]
+
+
         # Footer
         gr.Markdown(
-            """
-        ## About
-        
-        This leaderboard displays performance metrics for language models on Ukrainian language benchmarks. 
-        The data comes from evaluation results stored in `eval-results/<model_name>/results*.json`.
-        
-        ### Important Notes
-        
-        - **FLORES benchmarks**: Only English↔Ukrainian (en-uk, uk-en) translation pairs are displayed
-        - **MMLU**: Only the aggregate score is shown (no subcategories)
-        
-        ### How to Use
-        
-        - **Main Leaderboard**: View performance on core benchmarks
-        - **Detailed Benchmarks**: Explore performance on specific benchmark categories
-        - **Model Comparison**: Compare multiple models with radar charts
-        - **Visualizations**: Generate bar charts for specific metrics
-        
-        Sort tables by any metric and adjust display options using the controls.
-        """
+            readme_content
         )
+        
 
     return app
 
