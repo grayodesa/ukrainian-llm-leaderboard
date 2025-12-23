@@ -11,7 +11,7 @@ license: mit
 short_description: Measuring LLM capabilities to process Ukrainian texts
 ---
 
-# Ukrainian LLM Leaderboard
+# 💪 Ukrainian LLM Leaderboard
         
 This leaderboard displays performance metrics for language models on Ukrainian language benchmarks as used during development of [Lapa LLM](https://github.com/lapa-llm/lapa-llm).
 The data comes from evaluation results [lang-uk/ukrainian-llm-leaderboard-results](https://huggingface.co/datasets/lang-uk/ukrainian-llm-leaderboard-results) . Locally it's stored in `eval-results/<model_name>/results*.json`.
@@ -44,7 +44,7 @@ If you want to leave a feedback or suggest a new feature, please open an issue o
 
 Sort tables by any metric and adjust display options using the controls.
 
-### How to Run Benchmarks
+### ᯓ🏃🏻‍♀️‍➡️ How to Run Benchmarks
 
 ```bash
 pip install -r requirements-evals.txt
@@ -68,7 +68,7 @@ VLLM_WORKER_MULTIPROC_METHOD=spawn  lm_eval --model vllm \
 ```
 
 
-## Citation
+## 📚 Citation
 
 ```
 # main citation for the leaderboard 
