@@ -190,6 +190,9 @@ def load_results(results_dir: str = "eval-results") -> List[Dict[str, Any]]:
 
             # Process all benchmark categories
             for benchmark_dict in [ALL_BENCHMARKS]:
+                model_results["N-Shot"] = data.get("n-shot", {"bench": 0})
+                model_results["N-Shot"] = np.bincount(np.array(list(model_results["N-Shot"].values()))).argmax()
+                model_results["model_name"] += f" ({model_results['N-Shot']}-shot)"
                 for benchmark, config in benchmark_dict.items():
                     metric = config["metric"]
                     # Check if benchmark exists in results
