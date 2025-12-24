@@ -2,7 +2,7 @@ group: ukrainian_bench
 task:
   # question answering
   # - squad_uk
-  - belebele_ukr_Cyrl
+  - belebele_uk
   - global_mmlu_full_uk
   - triviaqa_uk
   - arc_easy_uk
@@ -22,9 +22,9 @@ task:
   - gsm8k_uk
   # language understanding
   - winogrande_uk
-  # - hellaswag_uk
+  - hellaswag_uk
   # instruction following
   - ifeval_uk
   # - mmlu_ukr TODO
 metadata:
-  version: 1.0
+  version: 2.0

@@ -1,3 +1,6 @@
+# Requirements for local GPU evaluation with vLLM
+# NOTE: Requires Python >=3.9,<3.13 (vLLM constraint)
+# For Python 3.13+, use requirements-api.txt instead
 lm-eval==0.4.8
 #torch==2.6.0
 # flash_attn==2.7.4.post1

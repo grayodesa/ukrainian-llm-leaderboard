@@ -1,0 +1,9 @@
+# Requirements for API-based evaluation (OpenAI, Anthropic, OpenAI-compatible)
+# Works with Python 3.12+
+lm-eval[api]>=0.4.8
+datasets<4
+# for ifeval
+langdetect
+immutabledict
+# for anthropic support
+anthropic
