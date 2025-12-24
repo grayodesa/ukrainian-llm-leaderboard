@@ -8,12 +8,20 @@
 #   ./eval_api.sh anthropic claude-3-5-sonnet-20241022
 #   ./eval_api.sh local http://localhost:8000/v1/chat/completions model-name
 #
-# Environment variables:
+# Environment variables (can be set in .env file):
 #   OPENAI_API_KEY     - Required for OpenAI
+#   OPENAI_BASE_URL    - Optional: Custom base URL for OpenAI-compatible APIs
 #   ANTHROPIC_API_KEY  - Required for Anthropic
-#   OPENAI_API_BASE    - Optional: Custom base URL for OpenAI-compatible APIs
 
 set -e
+
+# Load .env file if it exists
+if [ -f .env ]; then
+    echo "Loading environment from .env file..."
+    set -a
+    source .env
+    set +a
+fi
 
 # Default settings
 NUM_CONCURRENT="${NUM_CONCURRENT:-8}"
@@ -40,11 +48,14 @@ print_usage() {
     echo "  $0 anthropic claude-3-5-sonnet-20241022"
     echo "  $0 local http://localhost:8000/v1/chat/completions meta-llama/Llama-3.1-8B-Instruct"
     echo ""
-    echo "Environment variables:"
-    echo "  NUM_CONCURRENT=$NUM_CONCURRENT  - Concurrent requests"
-    echo "  MAX_RETRIES=$MAX_RETRIES     - Max retries per request"
-    echo "  OUTPUT_PATH=$OUTPUT_PATH - Output directory"
-    echo "  TASKS=$TASKS    - Task group to run"
+    echo "Environment variables (can be set in .env file):"
+    echo "  OPENAI_API_KEY    - API key for OpenAI"
+    echo "  OPENAI_BASE_URL   - Custom base URL (e.g., https://api.openai.com/v1)"
+    echo "  ANTHROPIC_API_KEY - API key for Anthropic"
+    echo "  NUM_CONCURRENT    - Concurrent requests (default: $NUM_CONCURRENT)"
+    echo "  MAX_RETRIES       - Max retries per request (default: $MAX_RETRIES)"
+    echo "  OUTPUT_PATH       - Output directory (default: $OUTPUT_PATH)"
+    echo "  TASKS             - Task group to run (default: $TASKS)"
 }
 
 check_api_key() {
@@ -67,7 +78,13 @@ check_api_key() {
 
 run_openai_eval() {
     local model=$1
-    local base_url="${OPENAI_API_BASE:-https://api.openai.com/v1/chat/completions}"
+    # Support both OPENAI_BASE_URL and legacy OPENAI_API_BASE
+    local base_url="${OPENAI_BASE_URL:-${OPENAI_API_BASE:-https://api.openai.com/v1/chat/completions}}"
+
+    # Ensure URL ends with /chat/completions for lm-eval compatibility
+    if [[ ! "$base_url" == */chat/completions ]]; then
+        base_url="${base_url%/}/chat/completions"
+    fi
 
     echo -e "${GREEN}Running evaluation with OpenAI API${NC}"
     echo "Model: $model"
