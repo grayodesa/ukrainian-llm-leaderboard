@@ -6,7 +6,7 @@
 #   ./eval_api.sh                    # Interactive mode - prompts for settings
 #   ./eval_api.sh openai gpt-4o      # OpenAI with specific model
 #   ./eval_api.sh anthropic claude-3-5-sonnet-20241022
-#   ./eval_api.sh local http://localhost:8000/v1/chat/completions model-name
+#   ./eval_api.sh local model-name http://localhost:8000/v1
 #
 # Environment variables (can be set in .env file):
 #   OPENAI_API_KEY     - Required for OpenAI
@@ -23,6 +23,12 @@ if [ -f .env ]; then
     set +a
 fi
 
+# Export HF_TOKEN for HuggingFace gated datasets (if set)
+if [ -n "$HF_TOKEN" ]; then
+    export HF_TOKEN
+    echo "HuggingFace token configured"
+fi
+
 # Default settings
 NUM_CONCURRENT="${NUM_CONCURRENT:-8}"
 MAX_RETRIES="${MAX_RETRIES:-3}"
@@ -36,17 +42,17 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 print_usage() {
-    echo "Usage: $0 [provider] [model] [base_url]"
+    echo "Usage: $0 <provider> <model> [base_url]"
     echo ""
     echo "Providers:"
-    echo "  openai     - OpenAI API (requires OPENAI_API_KEY)"
+    echo "  openai     - OpenAI API (requires OPENAI_API_KEY, uses OPENAI_BASE_URL if set)"
     echo "  anthropic  - Anthropic API (requires ANTHROPIC_API_KEY)"
-    echo "  local      - OpenAI-compatible local API (requires base_url)"
+    echo "  local      - OpenAI-compatible local API (requires base_url as 3rd argument)"
     echo ""
     echo "Examples:"
     echo "  $0 openai gpt-4o"
     echo "  $0 anthropic claude-3-5-sonnet-20241022"
-    echo "  $0 local http://localhost:8000/v1/chat/completions meta-llama/Llama-3.1-8B-Instruct"
+    echo "  $0 local meta-llama/Llama-3.1-8B-Instruct http://localhost:8000/v1"
     echo ""
     echo "Environment variables (can be set in .env file):"
     echo "  OPENAI_API_KEY    - API key for OpenAI"
@@ -118,8 +124,13 @@ run_anthropic_eval() {
 }
 
 run_local_eval() {
-    local base_url=$1
-    local model=$2
+    local model=$1
+    local base_url=$2
+
+    # Ensure URL ends with /chat/completions for lm-eval compatibility
+    if [[ ! "$base_url" == */chat/completions ]]; then
+        base_url="${base_url%/}/chat/completions"
+    fi
 
     echo -e "${GREEN}Running evaluation with local OpenAI-compatible API${NC}"
     echo "Model: $model"
@@ -191,7 +202,7 @@ case $PROVIDER in
             print_usage
             exit 1
         fi
-        run_local_eval "$BASE_URL" "$MODEL"
+        run_local_eval "$MODEL" "$BASE_URL"
         ;;
     *)
         echo -e "${RED}Error: Unknown provider '$PROVIDER'${NC}"

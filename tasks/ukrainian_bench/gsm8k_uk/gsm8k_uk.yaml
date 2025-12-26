@@ -32,11 +32,19 @@ num_fewshot: 0
 filter_list:
   - name: "strict-match"
     filter:
+      # First strip <think>...</think> tags from thinking models
+      - function: "regex"
+        regex_pattern: "(?:.*</think>\\s*)?(.*)"
+        group_select: 1
       - function: "regex"
         regex_pattern: "The answer is (\\-?[0-9\\.\\,]+)."
       - function: "take_first"
   - name: "flexible-extract"
     filter:
+      # First strip <think>...</think> tags from thinking models
+      - function: "regex"
+        regex_pattern: "(?:.*</think>\\s*)?(.*)"
+        group_select: 1
       - function: "regex"
         group_select: -1
         regex_pattern: "(-?[$0-9.,]{2,})|(-?[0-9]+)"

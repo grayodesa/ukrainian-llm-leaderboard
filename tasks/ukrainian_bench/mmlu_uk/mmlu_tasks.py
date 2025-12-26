@@ -29,13 +29,32 @@ subjects = {
     'college_biology', 'security_studies'
 }
 
+def _strip_thinking_tags(text: str) -> str:
+    """Strip <think>...</think> tags from thinking model responses."""
+    clean = re.sub(r'<think>.*?</think>\s*', '', text, flags=re.DOTALL)
+    clean = re.sub(r'.*?</think>\s*', '', clean, flags=re.DOTALL)
+    return clean.strip()
+
+
+def _extract_answer_letter(text: str) -> str:
+    """Extract standalone answer letter from response."""
+    clean = _strip_thinking_tags(text)
+    # Match standalone letter (not inside words like "answer")
+    match = re.search(r'(?:^|[:\s]|\*\*)([A-Da-d])(?:[.\)\s]|$|\*\*)', clean)
+    return match.group(1).upper() if match else ""
+
+
 def _exact_match(references: dict[str, str], predictions: dict[str, str]):
     mean_acc = 0
     for pred, ref in zip(predictions, references):
         correct_letter = ["A", "B", "C", "D"][ref["correct_answer"]]
         prediction = pred["prediction_text"]
-        if any(correct_letter in str(p).strip() for p in prediction):
-            mean_acc += 1
+        # Extract answer letter from each prediction, handling thinking tags
+        for p in prediction:
+            extracted = _extract_answer_letter(str(p))
+            if extracted == correct_letter:
+                mean_acc += 1
+                break
     return mean_acc / len(predictions)
 
 

@@ -1,6 +1,8 @@
 # Requirements for API-based evaluation (OpenAI, Anthropic, OpenAI-compatible)
 # Works with Python 3.12+
-lm-eval[api]>=0.4.8
+# Note: Released versions have a bug with --include_path task printing
+# Install from main branch until fix is released
+lm-eval[api] @ git+https://github.com/EleutherAI/lm-evaluation-harness.git@main
 datasets<4
 # for ifeval
 langdetect

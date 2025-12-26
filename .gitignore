@@ -1,3 +1,8 @@
 .gradio
 .env
 eval-results
+venv
+venv312
+.serena
+.claude
+*.pyc

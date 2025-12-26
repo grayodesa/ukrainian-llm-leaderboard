@@ -25,8 +25,13 @@ metric_list:
 filter_list:
   - name: "flexible-extract"
     filter:
+      # First strip <think>...</think> tags from thinking models
       - function: "regex"
-        regex_pattern: "([ABab])"
+        regex_pattern: "(?:.*</think>\\s*)?(.*)"
+        group_select: 1
+      # Extract standalone answer letter (A or B only)
+      - function: "regex"
+        regex_pattern: "(?:^|[:\\s]|\\*\\*)([ABab])(?:[.\\)\\s]|$|\\*\\*)"
       - function: "take_first"
       - function: "uppercase"
 metadata:
