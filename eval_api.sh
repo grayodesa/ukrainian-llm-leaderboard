@@ -13,12 +13,16 @@
 #   OPENAI_BASE_URL    - Optional: Custom base URL for OpenAI-compatible APIs
 #   ANTHROPIC_API_KEY  - Required for Anthropic
 #
+# Groq API:
+#   Groq requires a proxy due to message format differences. Usage:
+#   1. export GROQ_API_KEY=gsk_...
+#   2. python groq_proxy.py --reasoning-hidden  # Start proxy (use --reasoning-hidden for gpt-oss-20b)
+#   3. ./eval_api.sh local <model> http://localhost:8000/v1
+#
 # Thinking models (Qwen3, DeepSeek-R1):
-#   These models output <think>...</think> tags. Nebius TokenFactory doesn't
-#   currently support disabling this. Options:
-#   1. Use a non-thinking model variant if available
+#   These models output <think>...</think> tags. Options:
+#   1. Use a non-thinking model variant (e.g., Qwen3-30B-A3B-Instruct-2507)
 #   2. Self-host with vLLM: --chat-template-kwargs '{"enable_thinking": false}'
-#   3. Vote for: https://ideas.nebius.com/p/qwen3-for-single-model-use-disable-thinking
 
 set -e
 
@@ -61,10 +65,15 @@ print_usage() {
     echo "  $0 anthropic claude-3-5-sonnet-20241022"
     echo "  $0 local meta-llama/Llama-3.1-8B-Instruct http://localhost:8000/v1"
     echo ""
+    echo "For Groq API, use the proxy (see groq_proxy.py):"
+    echo "  python groq_proxy.py --reasoning-hidden &"
+    echo "  $0 local openai/gpt-oss-20b http://localhost:8000/v1"
+    echo ""
     echo "Environment variables (can be set in .env file):"
     echo "  OPENAI_API_KEY    - API key for OpenAI"
     echo "  OPENAI_BASE_URL   - Custom base URL (e.g., https://api.openai.com/v1)"
     echo "  ANTHROPIC_API_KEY - API key for Anthropic"
+    echo "  GROQ_API_KEY      - API key for Groq (used by groq_proxy.py)"
     echo "  NUM_CONCURRENT    - Concurrent requests (default: $NUM_CONCURRENT)"
     echo "  MAX_RETRIES       - Max retries per request (default: $MAX_RETRIES)"
     echo "  OUTPUT_PATH       - Output directory (default: $OUTPUT_PATH)"
@@ -169,7 +178,7 @@ if [ -z "$PROVIDER" ]; then
     echo "Select provider:"
     echo "1) OpenAI"
     echo "2) Anthropic"
-    echo "3) Local OpenAI-compatible API"
+    echo "3) Local OpenAI-compatible API (including Groq via proxy)"
     read -p "Choice [1-3]: " choice
 
     case $choice in
