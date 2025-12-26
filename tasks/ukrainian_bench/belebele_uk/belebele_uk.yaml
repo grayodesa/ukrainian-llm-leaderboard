@@ -22,13 +22,8 @@ metric_list:
 filter_list:
   - name: "flexible-extract"
     filter:
-      # First strip <think>...</think> tags from thinking models
       - function: "regex"
-        regex_pattern: "(?:.*</think>\\s*)?(.*)"
-        group_select: 1
-      # Extract standalone answer number (1-4)
-      - function: "regex"
-        regex_pattern: "(?:^|[:\\s]|\\*\\*)([1-4])(?:[.\\)\\s]|$|\\*\\*)"
+        regex_pattern: "([1-4])"
       - function: "take_first"
 metadata:
   version: 2.0

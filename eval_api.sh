@@ -7,6 +7,7 @@
 #   ./eval_api.sh openai gpt-4o      # OpenAI with specific model
 #   ./eval_api.sh anthropic claude-3-5-sonnet-20241022
 #   ./eval_api.sh local model-name http://localhost:8000/v1
+#   ./eval_api.sh --no-think openai Qwen/Qwen3-32B  # Disable thinking mode for Qwen3/DeepSeek-R1
 #
 # Environment variables (can be set in .env file):
 #   OPENAI_API_KEY     - Required for OpenAI
@@ -34,6 +35,13 @@ NUM_CONCURRENT="${NUM_CONCURRENT:-8}"
 MAX_RETRIES="${MAX_RETRIES:-3}"
 OUTPUT_PATH="${OUTPUT_PATH:-./eval-results}"
 TASKS="${TASKS:-ukrainian_bench}"
+NO_THINK=false
+
+# Parse --no-think flag
+if [ "$1" == "--no-think" ]; then
+    NO_THINK=true
+    shift  # Remove the flag from arguments
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -53,6 +61,10 @@ print_usage() {
     echo "  $0 openai gpt-4o"
     echo "  $0 anthropic claude-3-5-sonnet-20241022"
     echo "  $0 local meta-llama/Llama-3.1-8B-Instruct http://localhost:8000/v1"
+    echo "  $0 --no-think openai Qwen/Qwen3-32B-fast  # Disable thinking for Qwen3/DeepSeek-R1"
+    echo ""
+    echo "Options:"
+    echo "  --no-think  - Disable thinking mode for models like Qwen3, DeepSeek-R1"
     echo ""
     echo "Environment variables (can be set in .env file):"
     echo "  OPENAI_API_KEY    - API key for OpenAI"
@@ -96,13 +108,22 @@ run_openai_eval() {
     echo "Model: $model"
     echo "Base URL: $base_url"
     echo "Concurrent requests: $NUM_CONCURRENT"
+    if [ "$NO_THINK" = true ]; then
+        echo "Thinking mode: DISABLED"
+    fi
     echo ""
+
+    local extra_args=""
+    if [ "$NO_THINK" = true ]; then
+        extra_args="--chat_template_kwargs {\"enable_thinking\":false}"
+    fi
 
     lm_eval --model local-chat-completions \
         --model_args "model=$model,base_url=$base_url,num_concurrent=$NUM_CONCURRENT,max_retries=$MAX_RETRIES,tokenized_requests=False" \
         --tasks "$TASKS" \
         --include_path ./tasks \
         --apply_chat_template \
+        $extra_args \
         --output_path "$OUTPUT_PATH" \
         --log_samples
 }
@@ -136,13 +157,22 @@ run_local_eval() {
     echo "Model: $model"
     echo "Base URL: $base_url"
     echo "Concurrent requests: $NUM_CONCURRENT"
+    if [ "$NO_THINK" = true ]; then
+        echo "Thinking mode: DISABLED"
+    fi
     echo ""
+
+    local extra_args=""
+    if [ "$NO_THINK" = true ]; then
+        extra_args="--chat_template_kwargs {\"enable_thinking\":false}"
+    fi
 
     lm_eval --model local-chat-completions \
         --model_args "model=$model,base_url=$base_url,num_concurrent=$NUM_CONCURRENT,max_retries=$MAX_RETRIES,tokenized_requests=False" \
         --tasks "$TASKS" \
         --include_path ./tasks \
         --apply_chat_template \
+        $extra_args \
         --output_path "$OUTPUT_PATH" \
         --log_samples
 }

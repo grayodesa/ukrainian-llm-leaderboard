@@ -16,12 +16,8 @@ generation_kwargs:
   do_sample: false
   temperature: 0.0
 filter_list:
-  - name: "flexible-extract"
+  - name: remove_whitespace
     filter:
-      # First strip <think>...</think> tags from thinking models
-      - function: "regex"
-        regex_pattern: "(?:.*</think>\\s*)?(.*)"
-        group_select: 1
       - function: remove_whitespace
       - function: take_first
 target_delimiter: " "

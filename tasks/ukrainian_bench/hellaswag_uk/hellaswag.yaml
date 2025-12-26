@@ -24,13 +24,8 @@ metric_list:
 filter_list:
   - name: "flexible-extract"
     filter:
-      # First strip <think>...</think> tags from thinking models (Qwen3, DeepSeek-R1, etc.)
       - function: "regex"
-        regex_pattern: "(?:.*</think>\\s*)?(.*)"
-        group_select: 1
-      # Extract standalone answer letter (not inside words like "answer")
-      - function: "regex"
-        regex_pattern: "(?:^|[:\\s]|\\*\\*)([A-Da-d])(?:[.\\)\\s]|$|\\*\\*)"
+        regex_pattern: "([A-Da-d])"
       - function: "take_first"
       - function: "uppercase"
 metadata:

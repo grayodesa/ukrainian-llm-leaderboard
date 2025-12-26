@@ -24,16 +24,9 @@ metric_list:
     ignore_case: true
     ignore_punctuation: true
 filter_list:
-  - name: "flexible-extract"
+  - name: remove_whitespace
     filter:
-      # First strip <think>...</think> tags from thinking models
-      - function: "regex"
-        regex_pattern: "(?:.*</think>\\s*)?(.*)"
-        group_select: 1
-      # Extract standalone answer letter
-      - function: "regex"
-        regex_pattern: "(?:^|[:\\s]|\\*\\*)([A-Da-d])(?:[.\\)\\s]|$|\\*\\*)"
-      - function: "take_first"
-      - function: "uppercase"
+      - function: remove_whitespace
+      - function: take_first
 metadata:
   version: 1.0
